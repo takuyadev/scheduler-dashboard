@@ -32,10 +32,24 @@ class Dashboard extends Component {
       focused: null,
    };
 
-   selectPanel= (id) =>{
-      this.setState({
-         focused: id,
-      });
+   selectPanel(id) {
+      this.setState((previousState) => ({
+         focused: previousState.focused !== null ? null : id,
+      }));
+   }
+
+   componentDidMount() {
+      const focused = JSON.parse(localStorage.getItem("focused"));
+
+      if (focused) {
+         this.setState({ focused });
+      }
+   }
+
+   componentDidUpdate(previousProps, previousState) {
+      if (previousState.focused !== this.state.focused) {
+         localStorage.setItem("focused", JSON.stringify(this.state.focused));
+      }
    }
 
    render() {
@@ -56,7 +70,7 @@ class Dashboard extends Component {
             id={panel.id}
             label={panel.label}
             value={panel.value}
-            onSelect={this.selectPanel}
+            onSelect={() => this.selectPanel(panel.id)}
          />
       ));
 
